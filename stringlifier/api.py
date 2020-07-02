@@ -16,6 +16,7 @@
 
 from stringlifier.modules.stringc import AwDoC, AwDoCConfig, Encodings
 import torch
+import pkg_resources
 
 
 def _tokenize(string):
@@ -46,13 +47,21 @@ def _tokenize(string):
 
 
 class Stringlifier:
-    def __init__(self):
+    def __init__(self, model_base=None):
         encodings = Encodings()
-        encodings.load('data/string-c.encodings')
+        if model_base is None:
+            enc_file = pkg_resources.resource_filename(__name__, 'data/string-c.encodings')
+            conf_file = pkg_resources.resource_filename(__name__, 'data/string-c.conf')
+            model_file = pkg_resources.resource_filename(__name__, 'data/string-c.bestType')
+        else:
+            enc_file = '{0}.encodings'.format(model_base)
+            conf_file = '{0}.conf'.format(model_base)
+            model_file = '{0}.bestType'.format(model_base)
+        encodings.load(enc_file)
         config = AwDoCConfig()
-        config.load('data/string-c.conf')
+        config.load(conf_file)
         self.classifier = AwDoC(config, encodings)
-        self.classifier.load('data/string-c.bestType')
+        self.classifier.load(model_file)
         self.classifier.eval()
         self.encodings = encodings
 

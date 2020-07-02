@@ -40,8 +40,12 @@ class Encodings:
         json.dump({'char2int': self._char2int, 'type2int': self._type2int, 'subtype2int': self._subtype2int},
                   open(filename, 'w'))
 
-    def load(self, filename):
-        obj = json.load(open(filename, 'r'))
+    def load(self, file):
+        if isinstance(file, str):
+            stream = open(file, 'r')
+        else:
+            stream = file
+        obj = json.load(stream)
         self._char2int = obj['char2int']
         self._type2int = obj['type2int']
         self._subtype2int = obj['subtype2int']
@@ -89,8 +93,12 @@ class AwDoCConfig:
                    'hidden': self.hidden},
                   open(filename, 'w'))
 
-    def load(self, filename):
-        obj = json.load(open(filename))
+    def load(self, file):
+        if isinstance(file, str):
+            stream = open(file, 'r')
+        else:
+            stream = file
+        obj = json.load(stream)
         self.char_emb_size = obj['char_emb_size']
         self.rnn_size = obj['rnn_size']
         self.rnn_layers = obj['rnn_layers']

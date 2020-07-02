@@ -26,10 +26,8 @@ setuptools.setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ),
-    package_data={
-        '': ['data/string-c.bestType', 'data/string-c.conf', 'data/string-c.encodings']
-    },
-
     include_package_data=True,
-
+    package_data={
+        '': ['data/*']
+    }
 )
