@@ -1,0 +1,3 @@
+include data/string-c.bestType
+include data/string-c.conf
+include data/string-c.encodings
