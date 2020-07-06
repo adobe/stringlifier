@@ -12,7 +12,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="stringlifier",
-    version="0.1.0.0",
+    version="0.1.0.2",
     author="Multiple authors",
     author_email="tiberiu44@gmail.com",
     description="Python module for detecting password, api keys hashes and any other string that resembles a randomly generated character sequence.",
@@ -28,6 +28,8 @@ setuptools.setup(
     ),
     include_package_data=True,
     package_data={
-        '': ['data/*']
-    }
+        '': ['data/string-c.encodings', 'data/string-c.conf', 'data/string-c.bestType']
+    },
+    # data_files=['data/string-c.encodings', 'data/string-c.conf', 'data/string-c.bestType'],
+    zip_safe=False
 )
