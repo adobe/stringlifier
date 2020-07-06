@@ -65,8 +65,11 @@ class Stringlifier:
         self.classifier.eval()
         self.encodings = encodings
 
-    def __call__(self, string, return_tokens=False):
-        tokens, ignore_list = _tokenize(string)
+    def __call__(self, string_or_list, return_tokens=False):
+        if isinstance(string_or_list, str):
+            tokens, ignore_list = _tokenize(string_or_list)
+        else:
+            tokens = string_or_list
         with torch.no_grad():
             p_ts, _ = self.classifier(tokens)
 
