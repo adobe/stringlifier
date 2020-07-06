@@ -70,6 +70,7 @@ class Stringlifier:
             tokens, ignore_list = _tokenize(string_or_list)
         else:
             tokens = string_or_list
+            ignore_list = [False for _ in range(len(tokens))]
         with torch.no_grad():
             p_ts, _ = self.classifier(tokens)
 
