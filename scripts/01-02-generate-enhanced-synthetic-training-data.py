@@ -84,12 +84,14 @@ def _generate_next_cmd():
     use_space = False
     use_delimiter = False
     use_encloser = False
+    append_number = False
     for ii in range(num_words):
 
         use_delimiter = random.random() > 0.5
         use_encloser = random.random() > 0.8
         use_gen_word = random.random() > 0.7
         case_style = random.randint(0, 2)
+        use_gen_word = random.random() > 0.7
 
         del_index = random.randint(0, len(delimiters) - 1)
         enc_index = random.randint(0, len(enclosers) // 2 - 1) * 2
@@ -107,6 +109,9 @@ def _generate_next_cmd():
                 msk += 'H'
         else:
             wrd = _get_next_known()
+            append_number = random.random() > 0.97
+            if append_number:
+                wrd = wrd + str(random.randint(0, 9999))
             if case_style == 1:
                 wrd = wrd[0].upper() + wrd[1:]
             elif case_style == 2:
@@ -114,6 +119,7 @@ def _generate_next_cmd():
             msk = ''
             for _ in range(len(wrd)):
                 msk += 'C'
+
         if use_delimiter:
             wrd = delimiters[del_index] + wrd
             msk = 'C' + msk
