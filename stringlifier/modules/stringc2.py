@@ -163,8 +163,8 @@ def _load_dataset(filename):
     lines = open(filename, encoding='utf-8').readlines()
     dataset = []
     for ii in range(len(lines) // 2):
-        string = lines[ii * 2].strip()
-        mask = lines[ii * 2 + 1].strip()
+        string = lines[ii * 2][:-1]
+        mask = lines[ii * 2 + 1][:-1]
         dataset.append((string, mask))
     return dataset
 
@@ -248,13 +248,13 @@ def _start_train(params):
     criterion_t = torch.nn.CrossEntropyLoss(ignore_index=0)
 
     patience_left = params.patience
-    best_type = _eval(model, devset, encodings)
+    best_type = 0  # _eval(model, devset, encodings)
     encodings.save('{0}.encodings'.format(params.output_base))
     config.save('{0}.conf'.format(params.output_base))
     model.save('{0}.last'.format(params.output_base))
     print("Deveset evaluation acc={0}".format(best_type))
     epoch = 0
-    eval_at = 2
+    eval_at = 5000
 
     while patience_left > 0:
         epoch += 1
@@ -302,8 +302,12 @@ def _start_train(params):
 
             y_tar_t = _get_targets(y, encodings)
             y_tar_t = torch.tensor(y_tar_t, dtype=torch.long, device=params.device)
-
-            loss = criterion_t(y_pred_t.view(-1, y_pred_t.shape[-1]), y_tar_t.view(-1))
+            y_pred = y_pred_t.view(-1, y_pred_t.shape[-1])
+            y_target = y_tar_t.view(-1)
+            if y_pred.shape[0] != y_target.shape[0]:
+                from ipdb import set_trace
+                set_trace()
+            loss = criterion_t(y_pred, y_target)
 
             optimizer.zero_grad()
             total_loss += loss.item()
@@ -324,19 +328,19 @@ def _start_interactive(params):
     model.eval()
     sys.stdout.write('>>> ')
     sys.stdout.flush()
-    domain = input()
-    while domain != '/exit':
-        p_t, p_st = model([domain])
-        print(p_t)
-        print(p_st)
-        p_d_t = torch.argmax(p_t, dim=1).detach().cpu().item()
-        print("Results for '{0}'".format(domain))
-        print(encodings._label_list[p_d_t])
+    string = input()
+    while string != '/exit':
+        p_t = model([string])
+        p_d_t = torch.argmax(p_t, dim=-1).detach().cpu().numpy()
+        print("Results for \n{0}".format(string))
+        for ii in range(p_d_t.shape[-1]):
+            sys.stdout.write(encodings._label_list[p_d_t[0, ii]])
+        sys.stdout.write('\n')
 
         print("")
         sys.stdout.write('>>> ')
         sys.stdout.flush()
-        domain = input()
+        string = input()
 
 
 if __name__ == '__main__':
