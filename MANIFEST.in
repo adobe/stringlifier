@@ -1,3 +1,6 @@
 include data/string-c.bestType
 include data/string-c.conf
 include data/string-c.encodings
+include data/enhanced-c.bestType
+include data/enhanced-c.conf
+include data/enhanced-c.encodings
