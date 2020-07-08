@@ -76,7 +76,7 @@ import random
 
 
 def _generate_next_cmd():
-    delimiters = ' /.,?!~|<>-=_~'
+    delimiters = ' /.,?!~|<>-=_~:;\\+-&*%$#@!'
     enclosers = '[]{}``""\'\'()'
     mask = ''
     cmd = ''
