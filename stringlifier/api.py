@@ -21,84 +21,84 @@ import torch
 import pkg_resources
 
 
-def _tokenize(string):
-    tokens = []
-    ignore = []
-    current_token = ''
-    for char in string:
-        if char.isalnum():
-            current_token += char
-        else:
-            if current_token != '':
-                if current_token.isalnum():
-                    ignore.append(False)
-                else:
-                    ignore.append(True)
-                tokens.append(current_token)
-            current_token = ''
-
-            tokens.append(char)
-            ignore.append(True)
-
-    tokens.append(current_token)
-    if current_token.isalnum():
-        ignore.append(False)
-    else:
-        ignore.append(True)
-    return tokens, ignore
-
+# def _tokenize(string):
+#     tokens = []
+#     ignore = []
+#     current_token = ''
+#     for char in string:
+#         if char.isalnum():
+#             current_token += char
+#         else:
+#             if current_token != '':
+#                 if current_token.isalnum():
+#                     ignore.append(False)
+#                 else:
+#                     ignore.append(True)
+#                 tokens.append(current_token)
+#             current_token = ''
+#
+#             tokens.append(char)
+#             ignore.append(True)
+#
+#     tokens.append(current_token)
+#     if current_token.isalnum():
+#         ignore.append(False)
+#     else:
+#         ignore.append(True)
+#     return tokens, ignore
+#
+#
+# class Stringlifier:
+#     def __init__(self, model_base=None):
+#         encodings = Encodings()
+#         if model_base is None:
+#             enc_file = pkg_resources.resource_filename(__name__, 'data/string-c.encodings')
+#             conf_file = pkg_resources.resource_filename(__name__, 'data/string-c.conf')
+#             model_file = pkg_resources.resource_filename(__name__, 'data/string-c.bestType')
+#         else:
+#             enc_file = '{0}.encodings'.format(model_base)
+#             conf_file = '{0}.conf'.format(model_base)
+#             model_file = '{0}.bestType'.format(model_base)
+#         encodings.load(enc_file)
+#         config = AwDoCConfig()
+#         config.load(conf_file)
+#         self.classifier = AwDoC(config, encodings)
+#         self.classifier.load(model_file)
+#         self.classifier.eval()
+#         self.encodings = encodings
+#
+#     def __call__(self, string_or_list, return_tokens=False):
+#         if isinstance(string_or_list, str):
+#             tokens, ignore_list = _tokenize(string_or_list)
+#         else:
+#             tokens = string_or_list
+#             ignore_list = [False for _ in range(len(tokens))]
+#         with torch.no_grad():
+#             p_ts, _ = self.classifier(tokens)
+#
+#         p_ts = torch.argmax(p_ts, dim=-1).detach().cpu().numpy()
+#         token_output = []
+#         for ignore, token, p_t in zip(ignore_list, tokens, p_ts):
+#             if not ignore:
+#                 string_type = self.encodings._type_list[p_t]
+#             else:
+#                 string_type = 'SYMBOL'
+#
+#             token_output.append({'token': token, 'type': string_type})
+#
+#         output_string = ''
+#         for entry in token_output:
+#             if entry['type'] == 'HASH':
+#                 output_string += '<RANDOM_STRING>'
+#             else:
+#                 output_string += entry['token']
+#         if return_tokens:
+#             return output_string, token_output
+#         else:
+#             return output_string
+#
 
 class Stringlifier:
-    def __init__(self, model_base=None):
-        encodings = Encodings()
-        if model_base is None:
-            enc_file = pkg_resources.resource_filename(__name__, 'data/string-c.encodings')
-            conf_file = pkg_resources.resource_filename(__name__, 'data/string-c.conf')
-            model_file = pkg_resources.resource_filename(__name__, 'data/string-c.bestType')
-        else:
-            enc_file = '{0}.encodings'.format(model_base)
-            conf_file = '{0}.conf'.format(model_base)
-            model_file = '{0}.bestType'.format(model_base)
-        encodings.load(enc_file)
-        config = AwDoCConfig()
-        config.load(conf_file)
-        self.classifier = AwDoC(config, encodings)
-        self.classifier.load(model_file)
-        self.classifier.eval()
-        self.encodings = encodings
-
-    def __call__(self, string_or_list, return_tokens=False):
-        if isinstance(string_or_list, str):
-            tokens, ignore_list = _tokenize(string_or_list)
-        else:
-            tokens = string_or_list
-            ignore_list = [False for _ in range(len(tokens))]
-        with torch.no_grad():
-            p_ts, _ = self.classifier(tokens)
-
-        p_ts = torch.argmax(p_ts, dim=-1).detach().cpu().numpy()
-        token_output = []
-        for ignore, token, p_t in zip(ignore_list, tokens, p_ts):
-            if not ignore:
-                string_type = self.encodings._type_list[p_t]
-            else:
-                string_type = 'SYMBOL'
-
-            token_output.append({'token': token, 'type': string_type})
-
-        output_string = ''
-        for entry in token_output:
-            if entry['type'] == 'HASH':
-                output_string += '<RANDOM_STRING>'
-            else:
-                output_string += entry['token']
-        if return_tokens:
-            return output_string, token_output
-        else:
-            return output_string
-
-
-class Stringlifier2:
     def __init__(self, model_base=None):
         encodings = CEncodings()
         if model_base is None:
@@ -166,4 +166,5 @@ class Stringlifier2:
         if c_tok != '':
             stop = len(string)
             tokens.append((c_tok, start, stop))
+            new_str += '<RANDOM_STRING>'
         return new_str, tokens
