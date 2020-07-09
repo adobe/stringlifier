@@ -23,8 +23,6 @@ import numpy as np
 import random
 import tqdm
 
-sys.path.append('')
-
 
 class Encodings:
     def __init__(self, filename=None):
@@ -226,12 +224,23 @@ def _get_targets(y, encodings):
     return y_t
 
 
+def _generate_dataset(count):
+    from training import generate_next_cmd
+    dataset = []
+    for ii in range(count):
+        cmd, mask = generate_next_cmd()
+        dataset.append((cmd, mask))
+    return dataset
+
+
 def _start_train(params):
-    trainset = _load_dataset(params.train_file)
-    devset = _load_dataset(params.dev_file)
+    eval_at = 5000
+
     if params.resume:
         encodings = Encodings('{0}.encodings'.format(params.output_base))
     else:
+        trainset = _generate_dataset(int(eval_at * 4 * params.batch_size))
+        devset = _generate_dataset(int(eval_at / 10 * params.batch_size))
         encodings = Encodings()
         encodings.update_encodings(trainset)
     print('chars={0}, types={1}'.format(len(encodings._char2int), len(encodings._label2int)))
@@ -257,6 +266,13 @@ def _start_train(params):
     eval_at = 5000
 
     while patience_left > 0:
+        sys.stdout.write('Generating new random data...')
+        sys.stdout.flush()
+        trainset = _generate_dataset(int(eval_at * params.batch_size))
+        devset = _generate_dataset(int(eval_at / 10 * params.batch_size))
+        sys.stdout.write('done\n')
+        sys.stdout.flush()
+        sys.stderr.flush()
         epoch += 1
         random.shuffle(trainset)
         train_x, train_y = _make_batches(trainset, batch_size=params.batch_size)
@@ -348,8 +364,7 @@ if __name__ == '__main__':
     parser.add_option('--interactive', action='store_true', dest='interactive')
     parser.add_option('--train', action='store_true', dest='train')
     parser.add_option('--resume', action='store_true', dest='resume')
-    parser.add_option('--train-file', action='store', dest='train_file')
-    parser.add_option('--dev-file', action='store', dest='dev_file')
+
     parser.add_option('--store', action='store', dest='output_base')
     parser.add_option('--patience', action='store', dest='patience', type='int', default=20, help='(default=20)')
     parser.add_option('--batch-size', action='store', dest='batch_size', default=32, type='int', help='(default=32)')
