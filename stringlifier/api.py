@@ -141,7 +141,7 @@ class Stringlifier:
         else:
             return new_strings
 
-    def _extract_tokens(self, string, pred):
+    def _extract_tokens_2class(self, string, pred):
         mask = ''
         for p in pred:
             mask += self.encodings._label_list[p]
@@ -167,4 +167,53 @@ class Stringlifier:
             stop = len(string)
             tokens.append((c_tok, start, stop))
             new_str += '<RANDOM_STRING>'
+        return new_str, tokens
+
+    def _extract_tokens(self, string, pred):
+        mask = ''
+        for p in pred:
+            mask += self.encodings._label_list[p]
+        start = 0
+        new_str = ''
+        tokens = []
+        c_tok = ''
+        last_label = mask[0]
+        for ii in range(len(string)):
+            # check if the label-type has changed
+            if last_label != mask[ii]:
+                if c_tok != '':
+                    if last_label == 'C':
+                        new_str += c_tok
+                    elif last_label == 'H':
+                        type = '<RANDOM_STRING>'
+                    elif last_label == 'N':
+                        type = '<NUMERIC>'
+                    elif last_label == 'I':
+                        type = '<IP_ADDR>'
+                    elif last_label == 'U':
+                        type = '<UUID>'
+
+                    if last_label != 'C':
+                        tokens.append((c_tok, start, ii, type))
+                        new_str += type
+                    c_tok = ''
+                start = ii
+
+            last_label = mask[ii]
+            c_tok += string[ii]
+
+        if c_tok != '':
+            if last_label == 'C':
+                new_str += c_tok
+            elif last_label == 'H':
+                type = '<RANDOM_STRING>'
+            elif last_label == 'N':
+                type = '<NUMERIC>'
+            elif last_label == 'I':
+                type = '<IP_ADDR>'
+            elif last_label == 'U':
+                type = '<UUID>'
+            if last_label != 'C':
+                tokens.append((c_tok, start, ii, type))
+                new_str += type
         return new_str, tokens

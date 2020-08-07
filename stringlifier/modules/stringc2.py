@@ -239,10 +239,13 @@ def _start_train(params):
     if params.resume:
         encodings = Encodings('{0}.encodings'.format(params.output_base))
     else:
+        sys.stdout.write('Generating new random data...')
+        sys.stdout.flush()
         trainset = _generate_dataset(int(eval_at * 4 * params.batch_size))
-        devset = _generate_dataset(int(eval_at / 10 * params.batch_size))
+        sys.stdout.write('done\n')
         encodings = Encodings()
         encodings.update_encodings(trainset)
+
     print('chars={0}, types={1}'.format(len(encodings._char2int), len(encodings._label2int)))
     print(encodings._label2int)
 

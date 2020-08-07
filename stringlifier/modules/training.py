@@ -22,14 +22,26 @@ def _generate_word(known_words):
     import datetime
     import base64
     generated = []
-    ii = random.randint(0, 3)
+    ii = random.randint(0, 4)
     mask = 'H'
     if ii == 0:
         generated.append(str(uuid.uuid4()))
+        mask = 'U'
     elif ii == 1:
         generated.append(str(uuid.uuid4().hex))
+        mask = 'H'
     elif ii == 2:
-        generated.append(str(datetime.datetime.now().timestamp()))
+        c = random.randint(0, 3)
+        if c == 0:
+            generated.append(str(datetime.datetime.now().timestamp()))
+        elif c == 1:
+            generated.append(str(random.randint(0, 1000000)))
+        elif c == 2:
+            generated.append(str(random.randint(0, 999)) + '.' + str(random.randint(0, 999)))
+        else:
+            generated.append(str(random.randint(0, 999)) + '.' + str(random.randint(0, 9999)) + '.' +
+                             str(random.randint(0, 9999)))
+        mask = 'N'
     elif ii == 3:
         N = random.randint(5, 20)
         import string
@@ -40,6 +52,12 @@ def _generate_word(known_words):
         base64_bytes = base64.b64encode(message_bytes)
         base64_message = base64_bytes.decode('ascii')
         generated.append(base64_message)
+    elif ii == 4:
+        toks = []
+        for _ in range(4):
+            toks.append(str(random.randint(0, 255)))
+        generated.append('.'.join(toks))
+        mask = 'I'
     return str(generated[0]), mask[0]
 
 
