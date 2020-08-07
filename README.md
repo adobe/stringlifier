@@ -23,7 +23,7 @@ from stringlifier.api import Stringlifier
 
 stringlifier=Stringlifier()
 
-s = stringlifier('/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers com.apple.driverkit.AppleUserUSBHostHIDDevice0 0x10000992d')
+s = stringlifier("com.docker.hyperkit -A -u -F vms/0/hyperkit.pid -c 8 -m 8192M -b 127.0.0.1 --pass=\"NlcXVpYWRvcg\" -s 0:0,hostbridge -s 31,lpc -s 1:0,virtio-vpnkit,path=vpnkit.eth.sock,uuid=45172425-08d1-41ec-9d13-437481803412 -U c6fb5010-a83e-4f74-9a5a-50d9086b9")
 ```
 
 After this, `s` should be:
@@ -33,33 +33,23 @@ After this, `s` should be:
 You can also choose to see the full tokenization and classification output:
 
 ```python
-s, tokens = stringlifier('/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers com.apple.driverkit.AppleUserUSBHostHIDDevice0 0x10000992d', return_tokens=True)
+s, tokens = stringlifier("com.docker.hyperkit -A -u -F vms/0/hyperkit.pid -c 8 -m 8192M -b 127.0.0.1 --pass=\"NlcXVpYWRvcg\" -s 0:0,hostbridge -s 31,lpc -s 1:0,virtio-vpnkit,path=vpnkit.eth.sock,uuid=45172425-08d1-41ec-9d13-437481803412 -U c6fb5010-a83e-4f74-9a5a-50d9086b9", return_tokens=True)
 ```
 
 `s` will be the same as before and tokens will contain the following data:
 ```python
-[{'token': '/', 'type': 'SYMBOL'},
- {'token': 'System', 'type': 'STRING'},
- {'token': '/', 'type': 'SYMBOL'},
- {'token': 'Library', 'type': 'STRING'},
- {'token': '/', 'type': 'SYMBOL'},
- {'token': 'DriverExtensions', 'type': 'STRING'},
- {'token': '/', 'type': 'SYMBOL'},
- {'token': 'AppleUserHIDDrivers', 'type': 'STRING'},
- {'token': '.', 'type': 'SYMBOL'},
- {'token': 'dext', 'type': 'STRING'},
- {'token': '/', 'type': 'SYMBOL'},
- {'token': 'AppleUserHIDDrivers', 'type': 'STRING'},
- {'token': ' ', 'type': 'SYMBOL'},
- {'token': 'com', 'type': 'STRING'},
- {'token': '.', 'type': 'SYMBOL'},
- {'token': 'apple', 'type': 'STRING'},
- {'token': '.', 'type': 'SYMBOL'},
- {'token': 'driverkit', 'type': 'STRING'},
- {'token': '.', 'type': 'SYMBOL'},
- {'token': 'AppleUserUSBHostHIDDevice0', 'type': 'STRING'},
- {'token': ' ', 'type': 'SYMBOL'},
- {'token': '0x10000992d', 'type': 'HASH'}]
+[[('0', 33, 34, '<NUMERIC>'),
+   ('8', 51, 52, '<NUMERIC>'),
+   ('8192', 56, 60, '<NUMERIC>'),
+   ('127.0.0.1', 65, 74, '<IP_ADDR>'),
+   ('NlcXVpYWRvcg', 83, 95, '<RANDOM_STRING>'),
+   ('0', 100, 101, '<NUMERIC>'),
+   ('0', 102, 103, '<NUMERIC>'),
+   ('31', 118, 120, '<NUMERIC>'),
+   ('1', 128, 129, '<NUMERIC>'),
+   ('0', 130, 131, '<NUMERIC>'),
+   ('45172425-08d1-41ec-9d13-437481803412', 172, 208, '<UUID>'),
+   ('c6fb5010-a83e-4f74-9a5a-50d9086b9', 212, 244, '<UUID>')]]
 ```
 
 
