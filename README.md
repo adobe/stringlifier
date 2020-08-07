@@ -6,6 +6,9 @@ Typical usage scenarios include:
 * Sanitizing application or security logs
 * Detecting accidentally exposed credentials (complex passwords or api keys)
 
+# Interactive notebook
+
+You can see Stringlifier in action by checking out this [interactive notebook hosted on Colaboratory](https://colab.research.google.com/drive/1bgZQSKhVAYU4r46wqb0v8Sfvuo_yMOLA?usp=sharing).
 
 # Quick start guide
 
