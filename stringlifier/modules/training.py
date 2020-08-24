@@ -21,44 +21,47 @@ def _generate_word(known_words):
     import uuid
     import datetime
     import base64
-    generated = []
+    generated = None
     ii = random.randint(0, 4)
     mask = 'H'
     if ii == 0:
-        generated.append(str(uuid.uuid4()))
+        generated = str(uuid.uuid4())
         mask = 'U'
     elif ii == 1:
-        generated.append(str(uuid.uuid4().hex))
+        generated = str(uuid.uuid4().hex)
         mask = 'H'
     elif ii == 2:
         c = random.randint(0, 3)
         if c == 0:
-            generated.append(str(datetime.datetime.now().timestamp()))
+            generated = str(datetime.datetime.now().timestamp())
         elif c == 1:
-            generated.append(str(random.randint(0, 1000000)))
+            generated = str(random.randint(0, 1000000))
         elif c == 2:
-            generated.append(str(random.randint(0, 999)) + '.' + str(random.randint(0, 999)))
+            generated = str(random.randint(0, 999)) + '.' + str(random.randint(0, 999))
         else:
-            generated.append(str(random.randint(0, 999)) + '.' + str(random.randint(0, 9999)) + '.' +
-                             str(random.randint(0, 9999)))
+            generated = str(random.randint(0, 999)) + '.' + str(random.randint(0, 9999)) + '.' + str(
+                random.randint(0, 9999))
         mask = 'N'
     elif ii == 3:
-        N = random.randint(5, 20)
         import string
-        message = [random.choice(string.ascii_uppercase + string.digits) for _ in
-                   range(N)]  # known_words[random.randint(0, len(known_words) - 1)]
+        N = random.randint(5, 20)
+        message = [random.choice(string.ascii_uppercase +
+                                 string.digits +
+                                 string.ascii_lowercase) for _ in range(N)]
         message = ''.join(message)
-        message_bytes = message.encode('ascii')
-        base64_bytes = base64.b64encode(message_bytes)
-        base64_message = base64_bytes.decode('ascii')
-        generated.append(base64_message)
+        i = random.randint(0, 2)
+        if i == 0:
+            message = message.lower()
+        elif i == 1:
+            message = message.upper()
+        generated = message
     elif ii == 4:
         toks = []
         for _ in range(4):
             toks.append(str(random.randint(0, 255)))
-        generated.append('.'.join(toks))
+        generated = '.'.join(toks)
         mask = 'I'
-    return str(generated[0]), mask[0]
+    return str(generated), mask[0]
 
 
 lines = open('corpus/words_alpha.txt').readlines()
@@ -107,7 +110,6 @@ def generate_next_cmd():
 
         use_delimiter = random.random() > 0.5
         use_encloser = random.random() > 0.8
-        use_gen_word = random.random() > 0.7
         case_style = random.randint(0, 2)
         use_gen_word = random.random() > 0.7
 
