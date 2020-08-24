@@ -142,11 +142,11 @@ class Stringlifier:
             return new_strings
 
     def _extract_tokens_2class(self, string, pred):
+        CUTOFF = 5
         mask = ''
         for p in pred:
             mask += self.encodings._label_list[p]
         start = 0
-        new_str = ''
         tokens = []
         c_tok = ''
         for ii in range(len(string)):
@@ -157,8 +157,6 @@ class Stringlifier:
                     stop = ii
                     tokens.append((c_tok, start, stop))
                     c_tok = ''
-                    new_str += '<RANDOM_STRING>'
-                new_str += string[ii]
             else:
                 if c_tok == '':
                     start = ii
@@ -166,15 +164,29 @@ class Stringlifier:
         if c_tok != '':
             stop = len(string)
             tokens.append((c_tok, start, stop))
-            new_str += '<RANDOM_STRING>'
-        return new_str, tokens
+
+        # filter small tokens
+        final_toks = []
+        for token in tokens:
+            if token[2] - token[1] > 5:
+                final_toks.append(token)
+        # compose new string
+        new_str = ''
+        last_pos = 0
+        for token in final_toks:
+            if token[1] > last_pos:
+                new_str += string[last_pos:token[1]]
+            new_str += token[0]
+            last_pos = token[2] + 1
+        if last_pos < len(string):
+            new_str += string[last_pos:]
+        return new_str, final_toks
 
     def _extract_tokens(self, string, pred):
         mask = ''
         for p in pred:
             mask += self.encodings._label_list[p]
         start = 0
-        new_str = ''
         tokens = []
         c_tok = ''
         last_label = mask[0]
@@ -183,7 +195,7 @@ class Stringlifier:
             if last_label != mask[ii]:
                 if c_tok != '':
                     if last_label == 'C':
-                        new_str += c_tok
+                        pass
                     elif last_label == 'H':
                         type = '<RANDOM_STRING>'
                     elif last_label == 'N':
@@ -195,7 +207,6 @@ class Stringlifier:
 
                     if last_label != 'C':
                         tokens.append((c_tok, start, ii, type))
-                        new_str += type
                     c_tok = ''
                 start = ii
 
@@ -204,7 +215,7 @@ class Stringlifier:
 
         if c_tok != '':
             if last_label == 'C':
-                new_str += c_tok
+                pass
             elif last_label == 'H':
                 type = '<RANDOM_STRING>'
             elif last_label == 'N':
@@ -215,5 +226,20 @@ class Stringlifier:
                 type = '<UUID>'
             if last_label != 'C':
                 tokens.append((c_tok, start, ii, type))
-                new_str += type
-        return new_str, tokens
+
+        # filter small tokens
+        final_toks = []
+        for token in tokens:
+            if token[2] - token[1] > 5:
+                final_toks.append(token)
+        # compose new string
+        new_str = ''
+        last_pos = 0
+        for token in final_toks:
+            if token[1] > last_pos:
+                new_str += string[last_pos:token[1]]
+            new_str += token[3]
+            last_pos = token[2]
+        if last_pos < len(string) - 1:
+            new_str += string[last_pos:]
+        return new_str, final_toks
