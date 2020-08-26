@@ -28,7 +28,7 @@ s = stringlifier("com.docker.hyperkit -A -u -F vms/0/hyperkit.pid -c 8 -m 8192M 
 
 After this, `s` should be:
 
-```'/System/Library/DriverExtensions/AppleUserHIDDrivers.dext/AppleUserHIDDrivers com.apple.driverkit.AppleUserUSBHostHIDDevice0 <RANDOM_STRING>'```
+```'com.docker.hyperkit -A -u -F vms/0/hyperkit.pid -c 8 -m 8192M -b <IP_ADDR> --pass="<RANDOM_STRING>" -s 0:0,hostbridge -s 31,lpc -s 1:0,virtio-vpnkit,path=vpnkit.eth.sock,uuid=<UUID> -U <UUID>'```
 
 You can also choose to see the full tokenization and classification output:
 
