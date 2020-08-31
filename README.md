@@ -1,3 +1,6 @@
+[![Downloads](https://pepy.tech/badge/stringlifier)](https://pepy.tech/project/stringlifier) [![Downloads](https://pepy.tech/badge/stringlifier/month)](https://pepy.tech/project/stringlifier/month) ![Weekly](https://img.shields.io/pypi/dw/stringlifier.svg) ![daily](https://img.shields.io/pypi/dd/stringlifier.svg)
+![Version](https://badge.fury.io/py/stringlifier.svg) [![Python 3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/release/python-360/) [![GitHub stars](https://img.shields.io/github/stars/adobe/stringlifier.svg?style=social&label=Star&maxAge=2592000)](https://github.com/adobe/stringlifier/stargazers/)
+
 # stringlifier
 String-classifier - is a python module for detecting random string and hashes text/code. 
 
