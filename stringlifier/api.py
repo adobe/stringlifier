@@ -14,10 +14,12 @@
 # limitations under the License.
 #
 
+from nptyping import NDArray, Int64
 from stringlifier.modules.stringc import AwDoC, AwDoCConfig, Encodings
 from stringlifier.modules.stringc2 import CTagger, CTaggerConfig
 from stringlifier.modules.stringc2 import Encodings as CEncodings
 import torch
+from typing import List, Optional, Tuple, Union
 import pkg_resources
 
 
@@ -99,7 +101,7 @@ import pkg_resources
 #
 
 class Stringlifier:
-    def __init__(self, model_base=None):
+    def __init__(self, model_base: Optional[str] = None):
         encodings = CEncodings()
         if model_base is None:
             enc_file = pkg_resources.resource_filename(__name__, 'data/enhanced-c.encodings')
@@ -116,9 +118,9 @@ class Stringlifier:
         self.classifier.load(model_file)
         self.classifier.eval()
         self.encodings = encodings
-        self._c_index = encodings._label2int['C']
+        self._c_index: int = encodings._label2int['C']
 
-    def __call__(self, string_or_list, return_tokens=False):
+    def __call__(self, string_or_list: Union[str, List[str]], return_tokens: bool = False) -> Union[Tuple[List[str], List[List[Tuple[str, int, int, str]]]], List[str]]:
         if isinstance(string_or_list, str):
             tokens = [string_or_list]
         else:
@@ -128,8 +130,8 @@ class Stringlifier:
             p_ts = self.classifier(tokens)
 
         p_ts = torch.argmax(p_ts, dim=-1).detach().cpu().numpy()
-        ext_tokens = []
-        new_strings = []
+        ext_tokens: List[List[Tuple[str, int, int, str]]] = []
+        new_strings: List[str] = []
 
         for iBatch in range(p_ts.shape[0]):
             new_str, toks = self._extract_tokens(tokens[iBatch], p_ts[iBatch])
@@ -141,13 +143,13 @@ class Stringlifier:
         else:
             return new_strings
 
-    def _extract_tokens_2class(self, string, pred):
+    def _extract_tokens_2class(self, string: str, pred: NDArray[Int64]) -> Tuple[str, List[Tuple[str, int, int]]]:
         CUTOFF = 5
         mask = ''
         for p in pred:
             mask += self.encodings._label_list[p]
         start = 0
-        tokens = []
+        tokens: List[Tuple[str, int, int]] = []
         c_tok = ''
         for ii in range(len(string)):
             if mask[ii] == 'C':
@@ -166,12 +168,12 @@ class Stringlifier:
             tokens.append((c_tok, start, stop))
 
         # filter small tokens
-        final_toks = []
+        final_toks: List[Tuple[str, int, int]] = []
         for token in tokens:
             if token[2] - token[1] > 5:
                 final_toks.append(token)
         # compose new string
-        new_str = ''
+        new_str: str = ''
         last_pos = 0
         for token in final_toks:
             if token[1] > last_pos:
@@ -182,7 +184,7 @@ class Stringlifier:
             new_str += string[last_pos:]
         return new_str, final_toks
 
-    def _extract_tokens(self, string, pred):
+    def _extract_tokens(self, string: str, pred: NDArray[Int64]) -> Tuple[str, List[Tuple[str, int, int, str]]]:
         mask = ''
         for p in pred:
             mask += self.encodings._label_list[p]
@@ -197,16 +199,16 @@ class Stringlifier:
                     if last_label == 'C':
                         pass
                     elif last_label == 'H':
-                        type = '<RANDOM_STRING>'
+                        type_ = '<RANDOM_STRING>'
                     elif last_label == 'N':
-                        type = '<NUMERIC>'
+                        type_ = '<NUMERIC>'
                     elif last_label == 'I':
-                        type = '<IP_ADDR>'
+                        type_ = '<IP_ADDR>'
                     elif last_label == 'U':
-                        type = '<UUID>'
+                        type_ = '<UUID>'
 
                     if last_label != 'C':
-                        tokens.append((c_tok, start, ii, type))
+                        tokens.append((c_tok, start, ii, type_))
                     c_tok = ''
                 start = ii
 
@@ -217,23 +219,23 @@ class Stringlifier:
             if last_label == 'C':
                 pass
             elif last_label == 'H':
-                type = '<RANDOM_STRING>'
+                type_ = '<RANDOM_STRING>'
             elif last_label == 'N':
-                type = '<NUMERIC>'
+                type_ = '<NUMERIC>'
             elif last_label == 'I':
-                type = '<IP_ADDR>'
+                type_ = '<IP_ADDR>'
             elif last_label == 'U':
-                type = '<UUID>'
+                type_ = '<UUID>'
             if last_label != 'C':
-                tokens.append((c_tok, start, ii, type))
+                tokens.append((c_tok, start, ii, type_))
 
         # filter small tokens
-        final_toks = []
+        final_toks: List[Tuple[str, int, int, str]] = []
         for token in tokens:
             if token[2] - token[1] > 5:
                 final_toks.append(token)
         # compose new string
-        new_str = ''
+        new_str: str = ''
         last_pos = 0
         for token in final_toks:
             if token[1] > last_pos:
