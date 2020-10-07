@@ -226,6 +226,8 @@ class Stringlifier:
                 type_ = '<IP_ADDR>'
             elif last_label == 'U':
                 type_ = '<UUID>'
+            elif last_label == 'J':
+                type_ = '<JWT>'
             if last_label != 'C':
                 tokens.append((c_tok, start, ii, type_))
 
