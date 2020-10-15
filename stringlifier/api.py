@@ -192,6 +192,7 @@ class Stringlifier:
         tokens = []
         c_tok = ''
         last_label = mask[0]
+        type_: Optional[str] = None
         for ii in range(len(string)):
             # check if the label-type has changed
             if last_label != mask[ii]:
@@ -206,8 +207,10 @@ class Stringlifier:
                         type_ = '<IP_ADDR>'
                     elif last_label == 'U':
                         type_ = '<UUID>'
+                    elif last_label == 'J':
+                        type_ = '<JWT>'
 
-                    if last_label != 'C':
+                    if last_label != 'C' and type_ is not None:
                         tokens.append((c_tok, start, ii, type_))
                     c_tok = ''
                 start = ii
@@ -228,7 +231,7 @@ class Stringlifier:
                 type_ = '<UUID>'
             elif last_label == 'J':
                 type_ = '<JWT>'
-            if last_label != 'C':
+            if last_label != 'C' and type_ is not None:
                 tokens.append((c_tok, start, ii, type_))
 
         # filter small tokens
