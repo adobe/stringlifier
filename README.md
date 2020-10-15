@@ -19,6 +19,10 @@ You can quickly use stringlifier via pip-installation:
 ```bash
 $ pip install stringlifier
 ```
+In case you are using the pip3 installation that comes with Python3, use pip3 instead of pip in the above command.
+```bash
+$ pip3 install stringlifier
+```
 
 API example:
 ```python
