@@ -120,7 +120,8 @@ class Stringlifier:
         self.encodings = encodings
         self._c_index: int = encodings._label2int['C']
 
-    def __call__(self, string_or_list: Union[str, List[str]], return_tokens: bool = False) -> Union[Tuple[List[str], List[List[Tuple[str, int, int, str]]]], List[str]]:
+    def __call__(self, string_or_list: Union[str, List[str]], return_tokens: bool = False) -> Union[
+        Tuple[List[str], List[List[Tuple[str, int, int, str]]]], List[str]]:
         if isinstance(string_or_list, str):
             tokens = [string_or_list]
         else:
@@ -186,8 +187,15 @@ class Stringlifier:
 
     def _extract_tokens(self, string: str, pred: NDArray[Int64]) -> Tuple[str, List[Tuple[str, int, int, str]]]:
         mask = ''
-        for p in pred:
-            mask += self.encodings._label_list[p]
+        numbers = {str(ii): 1 for ii in range(10)}
+
+        for ii in range(len(pred)):
+            p = pred[ii]
+            cls = self.encodings._label_list[p]
+            if cls == 'C' and string[ii] in numbers:
+                mask += 'N'
+            else:
+                mask += cls
         start = 0
         tokens = []
         c_tok = ''
