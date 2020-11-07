@@ -17,7 +17,6 @@
 known_words = []
 
 
-
 def _generate_word(known_words):
     import uuid
     import datetime
@@ -62,8 +61,8 @@ def _generate_word(known_words):
             toks.append(str(random.randint(0, 255)))
         generated = '.'.join(toks)
         mask = 'I'
-    elif ii==5:
-        generated=_generate_JWT_token(known_words)
+    elif ii == 5:
+        generated = _generate_JWT_token(known_words)
         mask = 'J'
     return str(generated), mask[0]
 
@@ -76,11 +75,14 @@ for line in lines:
 def _generate_JWT_token(known_words):
     import jwt
 
-    payload = {"id": str(random.random()), "client_id": str(random.random()), "user_id": str(random.random()), "type": "access_token",
-               "expires_in": str(random.randint(10,3600000)), "scope": "read, write", "created_at": str(random.randint(1900000, 9000000))}
+    payload = {"id": str(random.random()), "client_id": str(random.random()), "user_id": str(random.random()),
+               "type": "access_token",
+               "expires_in": str(random.randint(10, 3600000)), "scope": "read, write",
+               "created_at": str(random.randint(1900000, 9000000))}
     encoded_jwt = jwt.encode(payload, 'secret', algorithm='HS256')
 
     return str(encoded_jwt)[2:-1]
+
 
 # generated_words = generate_words(len(known_words), known_words)
 
