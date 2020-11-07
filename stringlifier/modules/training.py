@@ -147,7 +147,7 @@ def generate_next_cmd():
             wrd = _get_next_known()
             append_number = random.random() > 0.97
             if append_number:
-                wrd = wrd + str(random.randint(0, 9999))
+                wrd = wrd + str(random.randint(0, 99))
             if case_style == 1:
                 wrd = wrd[0].upper() + wrd[1:]
             elif case_style == 2:
