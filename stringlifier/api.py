@@ -43,7 +43,7 @@ class Stringlifier:
         self.encodings = encodings
         self._c_index: int = encodings._label2int['C']
 
-    def __call__(self, string_or_list: Union[str, List[str]], return_tokens: bool = False) -> Union[
+    def __call__(self, string_or_list: Union[str, List[str]], return_tokens: bool = False, cutoff: int = 5) -> Union[
         Tuple[List[str], List[List[Tuple[str, int, int, str]]]], List[str]]:
         if isinstance(string_or_list, str):
             tokens = [string_or_list]
@@ -58,7 +58,7 @@ class Stringlifier:
         new_strings: List[str] = []
 
         for iBatch in range(p_ts.shape[0]):
-            new_str, toks = self._extract_tokens(tokens[iBatch], p_ts[iBatch])
+            new_str, toks = self._extract_tokens(tokens[iBatch], p_ts[iBatch], cutoff=cutoff)
             new_strings.append(new_str)
             ext_tokens.append(toks)
 
@@ -108,7 +108,7 @@ class Stringlifier:
             new_str += string[last_pos:]
         return new_str, final_toks
 
-    def _extract_tokens(self, string: str, pred: NDArray[Int64]) -> Tuple[str, List[Tuple[str, int, int, str]]]:
+    def _extract_tokens(self, string: str, pred: NDArray[Int64], cutoff: int = 5) -> Tuple[str, List[Tuple[str, int, int, str]]]:
         mask = ''
         numbers = {str(ii): 1 for ii in range(10)}
 
@@ -168,14 +168,14 @@ class Stringlifier:
         # filter small tokens
         final_toks: List[Tuple[str, int, int, str]] = []
         for token in tokens:
-            if token[2] - token[1] > 5:
+            if token[2] - token[1] > cutoff:
                 final_toks.append(token)
         # compose new string
         new_str: str = ''
         last_pos = 0
 
-        from ipdb import set_trace
-        set_trace()
+        # from ipdb import set_trace
+        # set_trace()
         for token in final_toks:
             if token[1] > last_pos:
                 new_str += string[last_pos:token[1]]
