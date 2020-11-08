@@ -35,7 +35,7 @@ def _generate_word(known_words):
         if c == 0:
             generated = str(datetime.datetime.now().timestamp())
         elif c == 1:
-            generated = str(random.randint(0, 1000000))
+            generated = str(random.randint(0, 100000000000))
         elif c == 2:
             generated = str(random.randint(0, 999)) + '.' + str(random.randint(0, 999))
         else:
