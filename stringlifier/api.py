@@ -50,6 +50,13 @@ class Stringlifier:
         else:
             tokens = string_or_list
 
+        max_len = max([len(s) for s in tokens])
+        if max_len == 0:
+            if return_tokens:
+                return [''], []
+            else:
+                return ['']
+
         with torch.no_grad():
             p_ts = self.classifier(tokens)
 
@@ -108,14 +115,15 @@ class Stringlifier:
             new_str += string[last_pos:]
         return new_str, final_toks
 
-    def _extract_tokens(self, string: str, pred: NDArray[Int64], cutoff: int = 5) -> Tuple[str, List[Tuple[str, int, int, str]]]:
+    def _extract_tokens(self, string: str, pred: NDArray[Int64], cutoff: int = 5) -> Tuple[
+        str, List[Tuple[str, int, int, str]]]:
         mask = ''
         numbers = {str(ii): 1 for ii in range(10)}
 
         for ii in range(len(pred)):
             p = pred[ii]
             cls = self.encodings._label_list[p]
-            if cls == 'C' and string[ii] in numbers:
+            if ii < len(string) and cls == 'C' and string[ii] in numbers:
                 mask += 'N'
             else:
                 mask += cls
