@@ -1,7 +1,8 @@
 ipdb>=0.13.4
-nptyping>=2.5.0
-numpy>=2.2.6
+nptyping>=1.4.4
+numpy>=1.20.0,<2.0.0
 PyJWT>=2.10.1
 setuptools>=80.7.1
-torch>=2.7.0
+torch>=2.0.0
 tqdm>=4.67.1
+scikit-learn>=1.0.0
